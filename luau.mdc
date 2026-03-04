@@ -428,8 +428,6 @@ In Roblox, `--!native` compiles **server-side scripts** to machine code. There i
 
 ### Roblox Luau (Default)
 
-In Roblox, use instance-path requires. This is the preferred style:
-
 ```luau
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local MyModule = require(ReplicatedStorage.Modules.MyModule)

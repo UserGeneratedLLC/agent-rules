@@ -4,12 +4,11 @@ alwaysApply: false
 ---
 # Asserts Module
 
-Runtime type validation for Luau. Located at `ReplicatedStorage.UserGenerated.Lang.Asserts`.
+Runtime type validation for Luau. Located at `ReplicatedStorage.UserGenerated.Lang.Asserts`. In plugins, the module may be located elsewhere—check the plugin's import paths.
 
 ## Basic Usage
 
 ```luau
-local Asserts = require(ReplicatedStorage.UserGenerated.Lang.Asserts)
 
 -- Direct validation (throws on failure)
 local n = Asserts.Integer(someValue)

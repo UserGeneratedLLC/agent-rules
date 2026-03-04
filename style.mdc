@@ -6,15 +6,21 @@ alwaysApply: true
 
 ## File Headers
 
-- Always use `--!strict` at the top of every Luau file
-- For performance-critical modules, add `--!native` and `--!optimize 2`
+- Always use `--!strict` and `--!optimize 2` at the top of every Luau file
+- For performance-critical functions, use `@native` on individual functions instead of file-level `--!native`
 - Leave one empty line after headers before code begins
 
 ```luau
 --!strict
---!native
 --!optimize 2
 
+```
+
+```luau
+@native
+local function HotPath(x: number): number
+	-- ...
+end
 ```
 
 ## Code Preservation
@@ -22,14 +28,6 @@ alwaysApply: true
 - Do NOT clean up, refactor, or reformat existing code unless you are specifically modifying that EXACT section
 - Only clean up a file when explicitly asked to do so
 - Leave surrounding code untouched even if it doesn't match current style conventions
-
-## Spacing
-
-- No space before `::` in type casts: `value::any` not `value :: any`
-- No space after `:` in type annotations: `x: number` not `x : number`
-- No spaces inside dictionary type braces: `{[string]: number}` not `{ [string]: number }`
-- Use tabs for indentation (not spaces)
-- Continuation lines are indented with one additional tab
 
 ## Section Banners
 
@@ -41,7 +39,7 @@ alwaysApply: true
 ------------------------------ Imports ------------------------------
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Bindable = require(ReplicatedStorage.UserGenerated.Concurrency.Bindable)
+local Bindable = require(...)
 
 ------------------------------ Types ------------------------------
 type Fields<self> = {}
@@ -84,10 +82,8 @@ end
 - Use local functions to optimize for inlining, then assign to Class table if needed
 - Static helpers and singletons belong on the module table
 - Always use `table.freeze()` for final module exports where possible
-- Always use `ipairs` or `pairs` for iteration—never raw `for..in` without an iterator
+- Use raw `for..in` iteration—never use `ipairs` or `pairs` (raw generalized iteration is faster)
 - Use `continue` to skip loop iterations instead of nested conditionals
-- Always include trailing commas on the last element of tables—makes adding new entries easier
-- Multi-line imports can be unpacked with continuation indentation using tabs
 - Use `bit32.bor(x, 0)` to ensure 32-bit unsigned integer wraparound
 - Place `assert` calls at the start of functions for parameter validation
 - Use `table.create(size, value)` for preallocation when size is known
@@ -95,34 +91,33 @@ end
 - Export module functions can be assigned directly: `module.IsA = IsA`
 - For buffer operations, prefer buffer methods over string conversion when possible
 - Use `table.concat(parts)` instead of repeated string concatenation
+- Use backtick string interpolation for simple concatenation (lowers to optimized `string.format`)
+- Use compound assignment operators (`+=`, `-=`, `*=`, `//=`, `..=`)—LHS evaluated once
+- Use `a // b` instead of `math.floor(a / b)` (dedicated VM opcode, supports `//=`)
+- Hoist library functions in hot paths: `local floor = math.floor` enables GETIMPORT fastcall
+- Use `math.lerp(a, b, t)` instead of `a + (b - a) * t` (exact at endpoints, monotonic)
+- Use `table.find(t, v)` instead of manual linear search loops
+- Use `table.clone(t)` instead of manual `pairs` clone
+- Use `bit32.byteswap(n)` and `bit32.countlz(n)` instead of manual implementations (CPU instructions)
+- Use `obj:Method()` not `obj.Method(obj)` for fast method call instruction
+- Use `if expr then A else B` over `cond and A or B` (one branch, safe for falsy values)
+- Move `pcall` out of hot loops—it prevents native codegen optimization
+- Use `string.method(s, ...)` over `s:method(...)` (fastcall path)
+- NEVER use `getfenv`/`setfenv`/`loadstring`—they disable ALL optimizations (imports, fastcalls, inlining)
 
 ```luau
--- Trailing commas
-local items = {
-	"first",
-	"second",
-	"third", -- trailing comma
-}
-
--- Multi-line import unpacking for frequently used functions
-local bxor, bor, band, lshift, rshift
-	= bit32.bxor, bit32.bor, bit32.band, bit32.lshift, bit32.rshift
-local huge, pi, floor, ldexp, sqrt, log, max, sin, cos, clamp
-	= math.huge, math.pi, math.floor, math.ldexp, math.sqrt, math.log,
-		math.max, math.sin, math.cos, math.clamp
-
--- WRONG: Raw iteration
-for _, effect in activeEffects do
-	table.insert(effects, effect)
-end
-
--- CORRECT: Use ipairs for arrays
+-- WRONG: ipairs/pairs adds overhead
 for _, effect in ipairs(activeEffects) do
 	table.insert(effects, effect)
 end
 
--- CORRECT: Use pairs for dictionaries
-for key, value in pairs(data) do
+-- CORRECT: Raw iteration
+for _, effect in activeEffects do
+	table.insert(effects, effect)
+end
+
+-- CORRECT: Raw dictionary iteration
+for key, value in data do
 	print(key, value)
 end
 
@@ -131,6 +126,36 @@ for i = 1, 10 do
 	if i % 2 == 0 then continue end
 	print(i) -- Only odd numbers
 end
+```
+
+```luau
+-- WRONG: math.floor(a / b)
+local index = math.floor(offset / stride)
+
+-- CORRECT: Floor division (dedicated VM opcode)
+local index = offset // stride
+
+-- WRONG: Manual lerp (imprecise at t=1)
+local result = a + (b - a) * t
+
+-- CORRECT: math.lerp (exact at endpoints, monotonic)
+local result = math.lerp(a, b, t)
+
+-- Compound assignment (LHS evaluated once)
+data[key].Score += delta
+
+-- Library hoisting for hot paths
+local floor = math.floor
+local abs = math.abs
+
+-- String interpolation (lowers to optimized string.format)
+warn(`[{scriptName}] Failed to load {assetId}: {err}`)
+
+-- WRONG: getfenv/setfenv/loadstring disable ALL optimizations
+local env = getfenv() -- even read-only deoptimizes the entire file
+
+-- CORRECT: Use debug.info for caller context
+local source, line = debug.info(2, "sl")
 ```
 
 ## Documentation
@@ -248,7 +273,7 @@ Always export `IsA` and `Assert` helper functions for type checking:
 ```luau
 ------------------------------ Helpers ------------------------------
 local function IsA(v: Type): boolean
-	return type(v) == "table" and getmetatable(v::any) == Metatable
+	return type(v) == "table" and getmetatable(v :: any) == Metatable
 end
 
 local function Assert(v: Type): Type
@@ -283,6 +308,8 @@ When a class has a constructor that takes a params table, use `Params` (not `Con
 3. Place `local module = {}` after the params
 4. Validate params at the start of `module.new()`
 
+See @asserts.mdc for the full `Asserts` module API.
+
 ```luau
 export type Params = {
 	Callback: (value: number) -> (),
@@ -306,7 +333,7 @@ function module.new(params: Params): Type
 		EasingStyle = params.EasingStyle or DefaultEasingStyle,
 		-- Don't initialize nil fields - they're implicit
 	}
-	local self: Private = setmetatable(fields, Metatable)::any
+	local self: Private = setmetatable(fields, Metatable) :: any
 	return self
 end
 ```
@@ -314,12 +341,22 @@ end
 ## Type Safety
 
 - Strive for zero type errors in every file for good static analysis
-- Avoid `::any` unless absolutely necessary (e.g., metatable assignment)
+- Avoid `:: any` unless absolutely necessary (e.g., metatable assignment)—it actively tells the compiler to give up optimization
+- Prefer type refinements (`type()`, `typeof()`, `:IsA()`, `assert()`) over casts to provide type info from runtime checks
+- When a cast is needed, use the narrowest type possible (`:: SpecificType`), never `:: any` as a shortcut
 - Do not fix existing type errors unless explicitly asked
 
 ```luau
--- Only use ::any when required, such as complex setmetatable
-local self: Private = setmetatable(fields, Metatable)::any
+-- Only use :: any when required, such as complex setmetatable
+local self: Private = setmetatable(fields, Metatable) :: any
+
+-- WRONG: Casting to any silences the error but kills codegen
+local value = data.Field :: any
+
+-- CORRECT: Narrow with a runtime check (compiler uses the refinement)
+if type(data.Field) == "number" then
+	local value = data.Field
+end
 ```
 
 ## Common Patterns
@@ -335,12 +372,15 @@ local function helperFunction(x: number): number
 end
 
 ------------------------------ Class ------------------------------
-local Class = {}::PrivateFunctions<Private>
 
 local function DoSomething(self: Private): number
 	return helperFunction(self.Value)
 end
-Class.DoSomething = DoSomething
+
+local Class: Functions<Private> = table.freeze({
+	DoSomething = DoSomething,
+})
+local Metatable = table.freeze({ __index = Class })
 ```
 
 ### Module Singletons
@@ -360,7 +400,7 @@ return table.freeze(module)
 Focus on modular, reusable, and simple code:
 
 - Break complex logic into small, testable functions
-- Prefer clarity over micro-optimizations
+- Prefer clarity in cold paths; apply the Conventions performance patterns in hot paths (RunService handlers, inner loops, recursive functions)
 - Keep functions focused on a single responsibility
 - Use descriptive variable names over abbreviated ones
 
