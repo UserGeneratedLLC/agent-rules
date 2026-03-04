@@ -6,13 +6,12 @@ alwaysApply: true
 
 ## File Headers
 
-- Always use `--!strict` and `--!optimize 2` at the top of every Luau file
+- Always use `--!strict` at the top of every Luau file
 - For performance-critical functions, use `@native` on individual functions instead of file-level `--!native`
 - Leave one empty line after headers before code begins
 
 ```luau
 --!strict
---!optimize 2
 
 ```
 
