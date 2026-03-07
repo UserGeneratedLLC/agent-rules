@@ -344,6 +344,11 @@ end
 - Prefer type refinements (`type()`, `typeof()`, `:IsA()`, `assert()`) over casts to provide type info from runtime checks
 - When a cast is needed, use the narrowest type possible (`:: SpecificType`), never `:: any` as a shortcut
 - Do not fix existing type errors unless explicitly asked
+- **Never cast after `:IsA()` refinement**—Luau narrows the type automatically inside `if inst:IsA("X")` and after `assert(inst:IsA("X"))`
+- **Prefer `assert(inst:IsA("X"), msg)` over `if not inst:IsA("X") then error(msg) end`**—`assert(:IsA())` narrows; guard-clause-with-`error()` does not
+- **Use `assert(x)` to remove optional types** instead of `x :: Type` (e.g., `assert(part.Parent)` not `part.Parent :: Instance`)
+- **For untyped API returns, define a local type and annotate the variable** instead of casting each access to `:: any`
+- **Acceptable `:: any` uses**: metatable assignment, dynamic property access (`inst[name]`), string-based Enum indexing, single `:: any` at `GetService` binding for untyped services (always paired with a typed local annotation), accessing unofficial/unscriptable properties not in the type database
 
 ```luau
 -- Only use :: any when required, such as complex setmetatable
@@ -356,6 +361,31 @@ local value = data.Field :: any
 if type(data.Field) == "number" then
 	local value = data.Field
 end
+
+-- WRONG: Redundant cast after :IsA() refinement
+if inst:IsA("Model") then
+	(inst :: Model):ScaleTo(2)
+end
+
+-- CORRECT: :IsA() already narrowed the type
+if inst:IsA("Model") then
+	inst:ScaleTo(2)
+end
+
+-- WRONG: guard clause doesn't narrow
+if not inst:IsA("BasePart") then error("not a part") end
+local cf = (inst :: BasePart).CFrame
+
+-- CORRECT: assert narrows
+assert(inst:IsA("BasePart"), "not a part")
+local cf = inst.CFrame
+
+-- WRONG: cast each access on an untyped API return
+local item = (result :: any).Field
+
+-- CORRECT: define the shape, annotate the local
+type ApiResult = { Field: string, Count: number }
+local result: ApiResult = SomeUntypedApi()
 ```
 
 ## Common Patterns
