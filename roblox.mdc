@@ -4,6 +4,9 @@ alwaysApply: true
 
 # Roblox Documentation Reference
 
+**Always use local documentation first.**
+The local docs in `.cursor/docs/shared/roblox/` and the API dump in `.cursor/docs/shared/roblox-api/Full-API-Dump.json` provide complete, up-to-date coverage of Roblox APIs, features, and best practices. Do not browse `creator.roblox.com` or fetch from any other Roblox official documentation URL unless you have exhausted the local files and still cannot find the information you need. If you do fall back to the web, return to using local docs for all subsequent lookups -- a single web fetch does not justify continued browsing.
+
 When you need information about Roblox APIs, features, or best practices, reference the documentation in `.cursor/docs/shared/roblox/`.
 
 ## Directory Structure
