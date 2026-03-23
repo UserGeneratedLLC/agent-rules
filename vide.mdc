@@ -6,7 +6,7 @@ alwaysApply: false
 
 Vide is a reactive UI library for Luau, inspired by SolidJS.
 
-For detailed API docs and tutorials, search `~/.agents/docs/usergenerated/vide/` using glob and grep.
+For detailed API docs and tutorials, search `~/.cursor/docs/usergenerated/vide/` using glob and grep.
 
 ## Core Concepts
 
