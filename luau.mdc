@@ -7,9 +7,9 @@ alwaysApply: true
 
 ## Finding Documentation
 
-- `~/.cursor/docs/usergenerated/roblox/en-us/luau/` - Roblox-specific Luau documentation (types, Roblox classes/enums, Studio integration)
-- `~/.cursor/docs/usergenerated/luau/` - Official Luau language documentation (type system, standard library, syntax, guides)
-- `~/.cursor/docs/usergenerated/luau-rfcs/` - RFC documents detailing every language feature and design decision
+- `.cursor/docs/usergenerated/roblox/en-us/luau/` - Roblox-specific Luau documentation (types, Roblox classes/enums, Studio integration)
+- `.cursor/docs/usergenerated/luau/` - Official Luau language documentation (type system, standard library, syntax, guides)
+- `.cursor/docs/usergenerated/luau-rfcs/` - RFC documents detailing every language feature and design decision
 
 ## Single-Threaded Execution Model
 
@@ -397,7 +397,7 @@ Available in type function environment: `types` library, `assert`, `error`, `pri
 
 ## Roblox-Specific
 
-For full Roblox Luau documentation, see `~/.cursor/docs/usergenerated/roblox/en-us/luau/`.
+For full Roblox Luau documentation, see `.cursor/docs/usergenerated/roblox/en-us/luau/`.
 
 ### Roblox Types in Annotations
 

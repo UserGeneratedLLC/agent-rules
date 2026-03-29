@@ -12,7 +12,7 @@ Always begin responses with "Yes Sir".
 - Do not refactor, rename, reformat, or "clean up" existing code unless specifically asked
 - Do not add comments, logging, or improvements beyond the request
 - If tempted to make extras, stop and justify the change to the user first
-- Prefer docs in `~/.cursor/docs/` and the context7 MCP over training data when available
+- Prefer docs in `.cursor/docs/` and the context7 MCP over training data when available
 
 ## Code Preservation
 
