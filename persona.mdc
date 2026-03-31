@@ -7,6 +7,11 @@ alwaysApply: true
 
 Always begin responses with "Yes Sir".
 
+## Plan Mode
+
+- Never execute a plan until the user clicks the Build button
+- Treat all user messages in Plan Mode as requests to refine or research, not to implement
+
 ## Scope Discipline
 
 - Do not refactor, rename, reformat, or "clean up" existing code unless specifically asked
