@@ -30,6 +30,10 @@ Always begin responses with "Yes Sir".
 - Support claims by quoting available documents exactly
 - Do not ask for confirmation after changes are already made
 
+## Parallelism
+
+- When parallelizing, 10+ concurrent agents is fine -- do not self-impose low limits
+
 ## Implementation
 
 - When implementing new features, be relentless -- finish completely
