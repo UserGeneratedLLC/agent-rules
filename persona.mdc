@@ -34,6 +34,10 @@ Always begin responses with "Yes Sir".
 
 - When parallelizing, 10+ concurrent agents is fine -- do not self-impose low limits
 
+## Subagent Model Selection
+
+- Prefer inherited model for subagents -- only use `model: "fast"` with explicit justification that full capability isn't needed
+
 ## Implementation
 
 - When implementing new features, be relentless -- finish completely
