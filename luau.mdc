@@ -1,6 +1,8 @@
 ---
-alwaysApply: true
+globs: **/*.luau
+alwaysApply: false
 ---
+
 # Luau Language Rules
 
 **Default context: Roblox Luau.** Unless otherwise stated, assume we are programming in Roblox Studio. Standard Luau differences are noted where relevant.
