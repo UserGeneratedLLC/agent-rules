@@ -6,14 +6,8 @@ alwaysApply: true
 
 ## File Headers
 
-- Always use `--!strict` at the top of every Luau file
+- Always use `--!strict` at the top of every Luau file, followed by one empty line before code begins
 - For performance-critical functions, use `@native` on individual functions instead of file-level `--!native`
-- Leave one empty line after headers before code begins
-
-```luau
---!strict
-
-```
 
 ```luau
 @native
@@ -184,12 +178,6 @@ end
 ```
 
 ## OOP Pattern
-
-For single-class modules, see canonical example:
-`ReplicatedStorage/UserGenerated/Collections/LeftistHeap.luau`
-
-For multi-class modules, prefix type names with the class name:
-`ReplicatedStorage/UserGenerated/Concurrency/Bindable.luau`
 
 ### Type Structure
 

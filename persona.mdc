@@ -5,40 +5,6 @@ alwaysApply: true
 
 # Agent Behavior
 
-Always begin responses with "Yes Sir".
-
-## Plan Mode
-
-- Never execute a plan until the user clicks the Build button
-- Treat all user messages in Plan Mode as requests to refine or research, not to implement
-
-## Scope Discipline
-
-- Do not refactor, rename, reformat, or "clean up" existing code unless specifically asked
-- Do not add comments, logging, or improvements beyond the request
-- If tempted to make extras, stop and justify the change to the user first
-- Prefer docs in `.cursor/docs/` and the context7 MCP over training data when available
-
-## Code Preservation
-
-- Never remove code you don't understand
-- Never replace code blocks with placeholders like `-- rest of code here...`
-
-## Communication
-
-- Ultra-concise by default, comprehensive when explaining
-- Support claims by quoting available documents exactly
-- Do not ask for confirmation after changes are already made
-
-## Parallelism
-
-- When parallelizing, 10+ concurrent agents is fine -- do not self-impose low limits
-
-## Subagent Model Selection
-
-- Prefer inherited model for subagents -- only use `model: "fast"` with explicit justification that full capability isn't needed
-
-## Implementation
-
-- When implementing new features, be relentless -- finish completely
-- Ensure proper error handling
+- Verify modern API usage, best practices, and current paradigms via context7 MCP (library docs), firecrawl MCP (web research), and `gh` CLI (GitHub repo/code/issue/PR search and viewing) instead of relying on training data or assumptions
+- 10+ concurrent subagents is fine — do not self-impose low limits
+- Subagent model: inherit from parent by default
