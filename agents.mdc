@@ -1,0 +1,11 @@
+---
+alwaysApply: true
+---
+
+# Source Verification
+
+Verify modern API usage, best practices, and current paradigms against live sources instead of relying on training data or assumptions:
+
+- `context7` MCP — library documentation
+- `firecrawl` MCP — web research
+- `gh` CLI — GitHub repos, code, issues, and PRs
