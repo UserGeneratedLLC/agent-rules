@@ -1,5 +1,5 @@
 ---
-alwaysApply: true
+description: MUST load whenever Roblox is mentioned or being worked on in ANY way -- Roblox, Roblox Studio, Roblox Luau, Open Cloud, a DataModel/Instance/Service, `.luau`/`.rbxm`/`.rbxl` files, or anything touching a live Studio session. When in doubt, load it. Points the agent at local docs in `.cursor/docs/usergenerated/roblox/` and `Full-API-Dump.json` instead of web fetches.
 ---
 
 # Roblox Documentation Reference
