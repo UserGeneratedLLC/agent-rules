@@ -10,13 +10,8 @@ Verify modern API usage, best practices, and current paradigms against live sour
 - `firecrawl` — web research
 - `gh` CLI — GitHub repos, code, issues, and PRs
 
-# Subagents and MCP access
+# Subagents
 
-Subagents reach configured MCP servers only through the `CallMcpTool` gateway. That gateway is included in the child only when `readonly: false` is passed on the `Task` call. Default `readonly` varies by parent mode — Plan-Mode parents default children to `readonly: true`, which strips `CallMcpTool` entirely and leaves zero MCPs reachable.
+When spawning a subagent via `Task`, always pass `readonly: false`, in every parent mode including Plan Mode. `readonly: true` puts the child in Cursor ask mode, which blocks MCP calls and state-changing Shell commands and forces the child to retry or surface approval prompts.
 
-Rules:
-
-- **If a subagent needs to call an MCP, pass `readonly: false` explicitly on the `Task` call.** This holds from both Agent Mode and Plan Mode parents (empirically verified).
-- **`readonly: false` grants write permissions** (file edits, state-changing shell commands). If you want read-only research behavior, constrain via the subagent's prompt — e.g. "Do NOT write files. Do NOT run state-changing shell commands." — rather than by flipping the flag back to `true`.
-- **Default `readonly: true` is correct for pure exploration** (Grep / Read / WebSearch / Glob only) and intentionally strips MCPs. Prefer it when the subagent genuinely needs nothing beyond filesystem + web.
-- **MCPs surface as one `CallMcpTool` built-in, not individual tool names.** If a subagent reports it cannot find an MCP it expected, confirm `readonly: false` was passed and that the subagent knows to invoke `CallMcpTool` with the appropriate server name.
+Constrain intent via the subagent's prompt (e.g. "do not write files, do not install, report findings only"), never via the flag.
